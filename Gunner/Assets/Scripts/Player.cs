@@ -24,9 +24,8 @@ public class Player : MonoBehaviour
     {
         // NewInputs version of Input.mousePosition;
         Vector3 mousePos = Input.mousePosition;
-        mousePos += ship.transform.forward * 100f;
-        aim = mainCamera.ScreenToWorldPoint(mousePos);
-        
+        aim = mainCamera.ScreenToWorldPoint(new Vector3(mousePos.x, mousePos.y, mainCamera.farClipPlane));
+
         // Draw a line so we can see where we are aiming at
         Debug.DrawLine(shootPoint.position, aim, Color.blue);
 
