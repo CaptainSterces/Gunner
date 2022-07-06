@@ -1,7 +1,6 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-//using UnityEngine.InputSystem;
 
 public class Player : MonoBehaviour
 {
@@ -9,6 +8,12 @@ public class Player : MonoBehaviour
     [SerializeField] private float force;
     public Transform shootPoint;
     public GameObject ship;
+    public int Ammo = 50;
+    //public GameObject gunEnd;
+
+
+    private float coolDown = 0.2f;
+    private float canFire;
     private Camera mainCamera;
 
     private void Start()
@@ -16,38 +21,52 @@ public class Player : MonoBehaviour
         mainCamera = Camera.main;
     }
 
-    // Moved this to class scope so that I can use it in OnDrawGizmos
+    
     private Vector3 aim;
 
-    // Update is called once per frame
+    
     void Update()
     {
-        // NewInputs version of Input.mousePosition;
+        //gunEnd.transform.LookAt(aim);
         Vector3 mousePos = Input.mousePosition;
         aim = mainCamera.ScreenToWorldPoint(new Vector3(mousePos.x, mousePos.y, mainCamera.farClipPlane));
 
-        // Draw a line so we can see where we are aiming at
+        
         Debug.DrawLine(shootPoint.position, aim, Color.blue);
 
-        // NewInputs version of Input.GetKeyDown(KeyCode.Mouse0)
-        if (Input.GetMouseButtonDown(0))
+        
+        if ((Input.GetKey(KeyCode.Mouse0)) && canFire <= Time.time && Ammo > 0)
         {
+            canFire = coolDown + Time.time;
+
             GameObject bullet = Instantiate(bulletPrefab, shootPoint.position, Quaternion.identity);
 
             bullet.transform.LookAt(aim);
 
             Rigidbody b = bullet.GetComponent<Rigidbody>();
             b.AddRelativeForce(bullet.transform.forward * force);
+
+            Ammo--;
+
+            if(Ammo == 0)
+            {
+                StartCoroutine(ReloadAmmo());
+            }
         }
     }
 
     private void OnDrawGizmos()
     {
-        // Yellow sphere is where the bullets spawn
         Gizmos.color = Color.yellow;
         Gizmos.DrawWireSphere(shootPoint.position, 0.1f);
-        // Red sphere is where they are going
+        
         Gizmos.color = Color.red;
         Gizmos.DrawWireSphere(aim, 0.25f);
+    }
+
+    private IEnumerator ReloadAmmo() 
+    {
+        yield return new WaitForSeconds(4);
+        Ammo = 50;
     }
 }

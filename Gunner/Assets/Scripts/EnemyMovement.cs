@@ -15,7 +15,7 @@ public class EnemyMovement : MonoBehaviour
     {
         movePoints = GameObject.Find("Ship").GetComponent <ShipMove>();
         randomPoint = Random.Range(0, 22);
-        randomZ = Random.Range(-20, 20);
+        randomZ = Random.Range(-40, 40);
         offset = new Vector3(0, 0, randomZ);
         flyPoint = new Vector3(0,0,0);
         flyPoint += (movePoints.moveTarget[randomPoint].transform.position) + offset;
@@ -26,9 +26,10 @@ public class EnemyMovement : MonoBehaviour
     {
         transform.LookAt(flyPoint);
         transform.position = Vector3.MoveTowards(transform.position, flyPoint, speed * Time.deltaTime);
+
         if(transform.position == flyPoint)
         {
-            Destroy(this);
+            Destroy(gameObject);
         }
     }
 
